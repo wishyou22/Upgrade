@@ -1,33 +1,46 @@
 import "./App.css";
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import { useState, useEffect } from "react";
-import { CommercialProjectsDetails } from "./Data3";
-import CommercialProjects from "./CommercialProjects";
-import CommercialDeatils from "./CommercialDetails"
+import React, { useState } from "react";
+import { useDispatch,useSelector } from "react-redux";
+import { addTodo } from "./Features/Todo/TodoSlice";
+import { removeTodo } from './Features/Todo/TodoSlice';
 
-// import Projects from "./Components/Projects/Projects";
 
+// import Component from "./Component";
 
 function App() {
-  
+    const [input, setInput] = useState('');
+    const dispatch = useDispatch();
 
+    const addTodoHandler = (e) => {
+        e.preventDefault();
+        dispatch(addTodo(input));
+        setInput('');
+    };
 
-  return (
-    <div className="App">
-      
-        <Router>
-          <Routes>
+    const todos = useSelector(state => state.todos);
+
+    return (
+        <div>
+            <form onSubmit={addTodoHandler}>
+                <input 
+                    type="text" 
+                    value={input} 
+                    onChange={(e) => setInput(e.target.value)} 
+                    placeholder="write todo"
+                />
+                <button type="submit">submit</button>
+            </form>
+         <div>
             
-            <Route path = "/CommercialProjects" element={<CommercialProjects CommercialProjectsDetails={ CommercialProjectsDetails}/>}/>
-            <Route path="/CommercialDetails/:id" element={<CommercialDeatils  CommercialProjectsDetails={ CommercialProjectsDetails} />}/>
-            
-            
-          </Routes>
-         
-        </Router>
-    </div>
-  );
+           {todos.map((todo) => (
+          <div key={todo.id}>
+            {todo.text}  
+            <p onClick={() => dispatch(removeTodo(todo.id))}> X</p>
+           </div>))}
+           
+         </div>
+        </div>
+    );
 }
 
 export default App;
